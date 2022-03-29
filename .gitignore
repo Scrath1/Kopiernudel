@@ -1,3 +1,6 @@
 .idea
 config.yml
 Pipfile.lock
+*.pyc
+*.lsv
+*.png
