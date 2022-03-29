@@ -12,4 +12,9 @@ The program requires a `config.yml` file located in its working directory. This 
 | interval  | The interval in seconds in which the src is checked for changes |
 
 After creating this file you can simply run the program using
-> python main.py
+```bash
+python main.py
+```
+
+### "Kopiernudel"?
+Literal german translation of copypasta
