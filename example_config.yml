@@ -1,2 +1,3 @@
 src: ./source_directory
 dst: ./destination_directory
+interval: 30
