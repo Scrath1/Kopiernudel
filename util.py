@@ -1,5 +1,6 @@
 import hashlib
 import os
+import shutil
 import time
 import yaml
 
@@ -13,15 +14,12 @@ def get_filename_from_path(path: str) -> str:
     return os.path.basename(os.path.normpath(path))
 
 
-# source: https://stackoverflow.com/questions/36204248/creating-unique-hash-for-directory-in-python
-def sha1_of_file(filepath):
-    sha = hashlib.sha1()
-    with open(filepath, 'rb') as f:
-        while True:
-            block = f.read(2**10)  # Magic number: one-megabyte blocks.
-            if not block: break
-            sha.update(block)
-        return sha.hexdigest()
+def append_to_file_or_dir(src: str, app: str):
+    if os.path.isdir(src):
+        return src + app
+    else:  # respect the file extension when appending
+        split = os.path.splitext(src)
+        return split[0] + app + split[1]
 
 
 def sleep_with_timer(t: float):
@@ -32,6 +30,39 @@ def sleep_with_timer(t: float):
         print(timer, end="\r", flush=True)
         time.sleep(1)
         t -= 1
+
+
+def copy(src: str, dst: str):
+    if os.path.isdir(src):
+        shutil.copytree(src, dst)
+    else:
+        shutil.copy(src, dst)
+
+
+def determine_copy_func(path: str):
+    """Returns the correct copy function based on whether the path leads to a file or a directory"""
+    if os.path.isdir(path):
+        return shutil.copytree
+    else:
+        return shutil.copy
+
+
+def get_hash(path: str) -> str:
+    if os.path.isdir(path):
+        return hash_dir(path)
+    else:
+        return sha1_of_file(path)
+
+
+# source: https://stackoverflow.com/questions/36204248/creating-unique-hash-for-directory-in-python
+def sha1_of_file(filepath):
+    sha = hashlib.sha1()
+    with open(filepath, 'rb') as f:
+        while True:
+            block = f.read(2**10)  # Magic number: one-megabyte blocks.
+            if not block: break
+            sha.update(block)
+        return sha.hexdigest()
 
 
 # source: https://stackoverflow.com/questions/36204248/creating-unique-hash-for-directory-in-python
