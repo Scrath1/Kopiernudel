@@ -18,19 +18,26 @@ def get_config(config_file: str = "config.yml"):
         return yaml.safe_load(f)
 
 
-config = get_config()
-source_dir = config["src"]
-dest_dir = config["dst"]
+def get_filename_from_path(path: str) -> str:
+    return os.path.basename(os.path.normpath(path))
 
-list_of_files = glob.glob(dest_dir + r"\*")  # * means all if need specific format then *.csv
-latest_file = ""
-if len(list_of_files) != 0:
-    latest_file = max(list_of_files, key=os.path.getctime)
 
-while True:
-    if latest_file == "" or get_savegame_hash(latest_file) != get_savegame_hash(source_dir):
-        time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-        target_filename = r"HonourMode" + time
-        shutil.copytree(source_dir, os.path.join(dest_dir, target_filename))
-        print(f"{time}: Created Backup")
-    sleep(60)
+if __name__ == "__main__":
+    config = get_config()
+    src = config["src"]
+    dst = config["dst"]
+    interval = config["interval"]
+    src_filename = get_filename_from_path(src)
+
+    while True:
+        list_of_files = glob.glob(dst + r"\*")
+        latest_file = ""
+        if len(list_of_files) != 0:
+            latest_file = max(list_of_files, key=os.path.getctime)
+
+        if latest_file == "" or get_savegame_hash(latest_file) != get_savegame_hash(src):
+            time = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+            target_filename = src_filename + time
+            shutil.copytree(src, os.path.join(dst, target_filename))
+            print(f"{time}: Created Backup")
+        sleep(interval)
